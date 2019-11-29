@@ -1,0 +1,23 @@
+body {
+    background-color: #3c3c3c;
+    color: #d3d3d3;
+}
+
+*, *::after, *::before { margin: 0; padding: 0; box-sizing: border-box }
+
+.main {
+    display: grid;
+    grid-template-columns: 400px auto;
+    grid-template-rows: 20vh 60vh 20vh;
+}
+
+.toolbar {
+    display: grid;
+    justify-content: center;
+    align-content: center;
+}
+
+.input {
+    margin-top: 40px;
+    margin-left: 20px;
+}
