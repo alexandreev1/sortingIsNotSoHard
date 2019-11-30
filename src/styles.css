@@ -11,13 +11,26 @@ body {
     grid-template-rows: 20vh 60vh 20vh;
 }
 
-.toolbar {
+.cell {
     display: grid;
     justify-content: center;
-    align-content: center;
+    align-content: start;
 }
 
 .input {
     margin-top: 40px;
     margin-left: 20px;
+}
+
+.bubble {
+    margin-top: 10px;
+    background-color: #1e90ff;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    height: 48px;
+    width: 48px;
+    border: solid 2px #1e90ff;
+    border-radius: 24px;
+    font-size: 30px;
 }
