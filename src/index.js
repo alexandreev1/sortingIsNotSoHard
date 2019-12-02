@@ -12,20 +12,19 @@ let contentPlace = document.querySelector("#contentPlace");
 
 input.addEventListener("change", e => {
     contentPlace.innerHTML = "";
-    if(!elArr.length && e.target.value !== "") {
-        e.target.value.split(/[, ]/g).forEach(el => elArr.push({el: null, value: parseInt(el)}));
-        displayCurrentArray(elArr);
-        makeABubble(elArr);
-        console.log(elArr);
-    } else if (e.target.value !== "") {
+    elArr = [];
+    if(e.target.value !== "") {
         let tempArr = e.target.value.split(/[, ]/g);
-        for (let i = 0; i < elArr.length; i++) {
-            elArr[i].value = parseInt(tempArr[i]);
+        if(tempArr.length >= 2) {
+            tempArr.forEach(el => elArr.push({el: null, value: parseInt(el)}));
+            displayCurrentArray(elArr);
+            makeABubble(elArr);
+            console.log(elArr);
+        } else {
+            alert(`Введенный числовой ряд: ${e.target.value} имеет менее двух элементов`);
+            return;
         }
-        displayCurrentArray(elArr);
-        makeABubble(elArr);
-        console.log(elArr);
-    }
+    } 
 });
 
 select.addEventListener("change", e => {
@@ -37,15 +36,15 @@ range.addEventListener("change", e => {
 });
 
 randomButton.addEventListener("click", () => {
-    if(!elArr.length) {
+    //if(!elArr.length) {
         elArr = getRandom(1, 50, 8);
         displayCurrentArray(elArr);
         makeABubble(elArr);
-    } else {
+    /*} else {
         getRandom(1, 50, 8);
         displayCurrentArray(elArr);
         makeABubble(elArr);
-    }
+    }*/
 });
 
 button.addEventListener("click", () => {
@@ -57,14 +56,17 @@ button.addEventListener("click", () => {
 //описывем функцию-рандомайзер для быстрого получения массива значений
 //пишется для тестирования во время разработки, но почему бы и не оставить
 function getRandom(from, to, size) {
-    if(!elArr.length) {
-        let randArr = [];
-        for (let i = 0; i < size; i++) {
+    contentPlace.innerHTML = "";
+    let randArr = [];
+    for (let i = 0; i < size; i++) {
+        //if(!elArr.length) {
             randArr.push({el: null, value: Math.floor(+from + Math.random() * (+to + 1 - +from))});
-        }
-        return randArr;
+        //} else {
+            //elArr[i].value = Math.floor(+from + Math.random() * (+to + 1 - +from));
+        //}
     }
-    elArr.forEach(el => el.value = Math.floor(+from + Math.random() * (+to + 1 - +from)));
+        
+    return randArr;   
 }
 
 //для отображения того, что мы вообще ввели в начале, в т.ч. рандомные значения
@@ -81,7 +83,7 @@ function displayCurrentArray(arr) {
     shown.innerHTML = arr.map(el => el.value).join(" ");
 }
 
-//TODO: Разобраться с setTimeout. !!!Не забыть закодить удаление лишних "шаров" при генерации меньшего числа компонентов, относительно предыдущей сортировки.
+//TODO: Закончить дербанить рандомайзер. Внедрить остальные способы сортировки.
 function makeABubble(arr) {
     for (let i = 0; i < arr.length; i++) {
         let bubble = document.querySelector(`#bubble-${i.toString()}`);
