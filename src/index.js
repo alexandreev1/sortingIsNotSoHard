@@ -11,10 +11,21 @@ let randomButton = document.getElementById("randomButton");
 let contentPlace = document.getElementById("contentPlace");
 
 input.addEventListener("change", e => {
-    elArr = [];
-    e.target.value.split(/[, ]/g).forEach(el => elArr.push({el: null, value: el.toString()}));
-    displayCurrentArray(elArr);
-    makeABubble(elArr);
+    //elArr = [];
+    if(!elArr.length && e.target.value !== "") {
+        e.target.value.split(/[, ]/g).forEach(el => elArr.push({el: null, value: parseInt(el)}));
+        displayCurrentArray(elArr);
+        makeABubble(elArr);
+        console.log(elArr);
+    } else if (e.target.value !== "") {
+        let tempArr = e.target.value.split(/[, ]/g);
+        for (let i = 0; i < elArr.length; i++) {
+            elArr[i].value = parseInt(tempArr[i]);
+        }
+        displayCurrentArray(elArr);
+        makeABubble(elArr);
+        console.log(elArr);
+    }
 });
 
 select.addEventListener("change", e => {
@@ -26,11 +37,16 @@ range.addEventListener("change", e => {
 });
 
 randomButton.addEventListener("click", () => {
-    elArr = [];
-    elArr = getRandom(1, 99, 8);
-    console.log(elArr);
-    displayCurrentArray(elArr);
-    makeABubble(elArr);
+    if(!elArr.length) {
+        elArr = getRandom(1, 50, 8);
+        displayCurrentArray(elArr);
+        makeABubble(elArr);
+    } else {
+        getRandom(1, 50, 8);
+        console.log(elArr);
+        displayCurrentArray(elArr);
+        makeABubble(elArr);
+    }
 });
 
 button.addEventListener("click", () => {
@@ -42,11 +58,14 @@ button.addEventListener("click", () => {
 //описывем функцию-рандомайзер для быстрого получения массива значений
 //пишется для тестирования во время разработки, но почему бы и не оставить
 function getRandom(from, to, size) {
-    let randArr = [];
-    for (let i = 0; i < size; i++) {
-        randArr.push({el: null, value: Math.floor(+from + Math.random() * (+to + 1 - +from))});
+    if(!elArr.length) {
+        let randArr = [];
+        for (let i = 0; i < size; i++) {
+            randArr.push({el: null, value: Math.floor(+from + Math.random() * (+to + 1 - +from))});
+        }
+        return randArr;
     }
-    return randArr;
+    elArr.forEach(el => el.value = Math.floor(+from + Math.random() * (+to + 1 - +from)));
 }
 
 //для отображения того, что мы вообще ввели в начале, в т.ч. рандомные значения
@@ -63,25 +82,27 @@ function displayCurrentArray(arr) {
     shown.innerHTML = arr.map(el => el.value).join(" ");
 }
 
+//TODO: Разобраться с setTimeout. !!!Не забыть закодить удаление лишних шаров при генерации меньшего числа компонентов, относительно предыдущей сортировки.
 function makeABubble(arr) {
     for (let i = 0; i < arr.length; i++) {
         let bubble = document.getElementById(`bubble-${i.toString()}`);
         if (!bubble) {
             let bubble = document.createElement("div");
             bubble.className = "bubble";
-            bubble.style.top = `${56 * i}px`;
+            bubble.style.transform = `translateY(${56 * i}px)`;
             bubble.innerHTML = arr[i].value.toString();
             bubble.id = `bubble-${i.toString()}`;
             contentPlace.appendChild(bubble);
             elArr[i] = ({el: bubble, value: arr[i].value});
             continue;
+        } else if(arr[i].el) {
+            arr[i].el.style.transform = `translateY(${56 * i}px)`;
+            arr[i].el.innerHTML = arr[i].value.toString();
+            continue;
         }
-        bubble.className = "bubble";
-        bubble.style.top = `${56 * i}px`;
+        bubble.style.transform = `translateY(${56 * i}px)`;
         bubble.innerHTML = arr[i].value.toString();
-        elArr[i] = ({el: bubble, value: arr[i].value});
     }
-    console.log(elArr);
 }
 
 //сортировка "пузырьком"
@@ -94,10 +115,13 @@ function bubbleSort(arr) {
                 arr[j] = arr[j + 1];
                 arr[j + 1] = swap;
                 wasSwap = true;
+                arr = arr.slice();
+                (function(arr) {
+                    setTimeout(() => makeABubble(arr), 500 * i);
+                })(arr);
             }
         }
         if (!wasSwap) break;
     }
-    console.log(arr);
     return arr;
 }
