@@ -2,13 +2,13 @@ let elArr = [];
 let optionValue = "shell";
 let rangeValue = 10;
 
-let input = document.getElementById("textInput");
-let select = document.getElementById("way");
-let range = document.getElementById("speed");
-let button = document.getElementById("applyButton");
-let display = document.getElementById("display");
-let randomButton = document.getElementById("randomButton");
-let contentPlace = document.getElementById("contentPlace");
+let input = document.querySelector("#textInput");
+let select = document.querySelector("#way");
+let range = document.querySelector("#speed");
+let button = document.querySelector("#applyButton");
+let display = document.querySelector("#display");
+let randomButton = document.querySelector("#randomButton");
+let contentPlace = document.querySelector("#contentPlace");
 
 input.addEventListener("change", e => {
     //elArr = [];
@@ -70,7 +70,7 @@ function getRandom(from, to, size) {
 
 //для отображения того, что мы вообще ввели в начале, в т.ч. рандомные значения
 function displayCurrentArray(arr) {
-    let shown = document.getElementById("theOne");
+    let shown = document.querySelector("#theOne");
 
     if (!shown) {
         let shown = document.createElement("h1");
@@ -82,10 +82,10 @@ function displayCurrentArray(arr) {
     shown.innerHTML = arr.map(el => el.value).join(" ");
 }
 
-//TODO: Разобраться с setTimeout. !!!Не забыть закодить удаление лишних шаров при генерации меньшего числа компонентов, относительно предыдущей сортировки.
+//TODO: Разобраться с setTimeout. !!!Не забыть закодить удаление лишних "шаров" при генерации меньшего числа компонентов, относительно предыдущей сортировки.
 function makeABubble(arr) {
     for (let i = 0; i < arr.length; i++) {
-        let bubble = document.getElementById(`bubble-${i.toString()}`);
+        let bubble = document.querySelector(`#bubble-${i.toString()}`);
         if (!bubble) {
             let bubble = document.createElement("div");
             bubble.className = "bubble";
@@ -118,7 +118,7 @@ function bubbleSort(arr) {
                 arr = arr.slice();
                 (function(arr) {
                     setTimeout(() => makeABubble(arr), 500 * i);
-                })(arr);
+                }(arr));
             }
         }
         if (!wasSwap) break;
