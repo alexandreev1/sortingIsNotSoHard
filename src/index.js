@@ -1,6 +1,6 @@
 let elArr = [];
 let optionValue = "shell";
-let rangeValue = 10;
+let rangeValue = 1.2;
 
 let input = document.querySelector("#textInput");
 let select = document.querySelector("#way");
@@ -11,7 +11,7 @@ let randomButton = document.querySelector("#randomButton");
 let contentPlace = document.querySelector("#contentPlace");
 
 input.addEventListener("change", e => {
-    //elArr = [];
+    contentPlace.innerHTML = "";
     if(!elArr.length && e.target.value !== "") {
         e.target.value.split(/[, ]/g).forEach(el => elArr.push({el: null, value: parseInt(el)}));
         displayCurrentArray(elArr);
@@ -33,7 +33,7 @@ select.addEventListener("change", e => {
 });
 
 range.addEventListener("change", e => {
-    rangeValue = parseInt(e.target.value, 10);
+    rangeValue = parseInt(e.target.value, 10) / 50 + 2;
 });
 
 randomButton.addEventListener("click", () => {
@@ -43,7 +43,6 @@ randomButton.addEventListener("click", () => {
         makeABubble(elArr);
     } else {
         getRandom(1, 50, 8);
-        console.log(elArr);
         displayCurrentArray(elArr);
         makeABubble(elArr);
     }
@@ -93,20 +92,18 @@ function makeABubble(arr) {
             bubble.innerHTML = arr[i].value.toString();
             bubble.id = `bubble-${i.toString()}`;
             contentPlace.appendChild(bubble);
-            elArr[i] = ({el: bubble, value: arr[i].value});
-            continue;
-        } else if(arr[i].el) {
+            elArr[i] = ({el: bubble, value: arr[i].value});            
+        }
+        if(arr[i].el) {
             arr[i].el.style.transform = `translateY(${56 * i}px)`;
             arr[i].el.innerHTML = arr[i].value.toString();
-            continue;
         }
-        bubble.style.transform = `translateY(${56 * i}px)`;
-        bubble.innerHTML = arr[i].value.toString();
     }
 }
 
 //сортировка "пузырьком"
 function bubbleSort(arr) {
+    let counter = 0;
     for (let i = 0, endI = arr.length - 1; i < endI; i++) {
         let wasSwap = false;
         for (let j = 0, endJ = endI - i; j < endJ; j++) {
@@ -117,7 +114,7 @@ function bubbleSort(arr) {
                 wasSwap = true;
                 arr = arr.slice();
                 (function(arr) {
-                    setTimeout(() => makeABubble(arr), 500 * i);
+                    setTimeout(() => makeABubble(arr), 1000 / rangeValue * ++counter);
                 }(arr));
             }
         }
