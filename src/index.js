@@ -1,6 +1,6 @@
 let elArr = [];
 let optionValue = "shell";
-let rangeValue = 1.2;
+let rangeValue = 500;
 
 let input = document.querySelector("#textInput");
 let select = document.querySelector("#way");
@@ -13,16 +13,25 @@ let contentPlace = document.querySelector("#contentPlace");
 input.addEventListener("change", e => {
     contentPlace.innerHTML = "";
     elArr = [];
-    if(e.target.value !== "") {
+    if(e.target.value !== "" && e.target.value !== " ") {
         let tempArr = e.target.value.split(/[, ]/g);
+        for(let i = 0; i < tempArr.length; i++) {
+            if(parseInt(tempArr[i]) > 99 || parseInt(tempArr[i]) < 0) {
+                alert(`В введенной числовой последовательности:\n"${e.target.value}"\n присутствует элемент больше 99 или меньше 0: ${tempArr[i]}`);
+                input.value = "";
+                return;
+            } else if(isNaN(parseInt(tempArr[i]))) {
+                alert(`В введенной числовой последовательности: "${e.target.value}" присутствует не числовой элемент: ${tempArr[i]}`);
+                input.value = "";
+                return;
+            }
+        }
         if(tempArr.length >= 2) {
             tempArr.forEach(el => elArr.push({el: null, value: parseInt(el)}));
             displayCurrentArray(elArr);
-            makeABubble(elArr);
-            console.log(elArr);
+            makeBubble(elArr);
         } else {
-            alert(`Введенный числовой ряд: ${e.target.value} имеет менее двух элементов`);
-            return;
+            alert(`Введенная числовая последовательность: "${e.target.value}" имеет менее двух элементов`);
         }
     } 
 });
@@ -32,23 +41,28 @@ select.addEventListener("change", e => {
 });
 
 range.addEventListener("change", e => {
-    rangeValue = parseInt(e.target.value, 10) / 50 + 2;
+    rangeValue = parseInt(e.target.value, 10);
+    rangeValue = -rangeValue + 2000;
 });
 
 randomButton.addEventListener("click", () => {
-    //if(!elArr.length) {
-        elArr = getRandom(1, 50, 8);
-        displayCurrentArray(elArr);
-        makeABubble(elArr);
-    /*} else {
-        getRandom(1, 50, 8);
-        displayCurrentArray(elArr);
-        makeABubble(elArr);
-    }*/
+    elArr = getRandom(1, 50, 8);
+    displayCurrentArray(elArr);
+    makeBubble(elArr);
 });
 
 button.addEventListener("click", () => {
-    elArr = bubbleSort(elArr);
+    switch(optionValue) {
+        case "bubble":
+            elArr = bubbleSort(elArr);
+            break;
+        case "shell":
+            elArr = shellSort(elArr);
+            break;
+        case "pyramidal":
+            elArr = heapSort(elArr);
+    }
+    console.log(elArr);
     displayCurrentArray(elArr);
     input.value = "";
 });
@@ -59,11 +73,7 @@ function getRandom(from, to, size) {
     contentPlace.innerHTML = "";
     let randArr = [];
     for (let i = 0; i < size; i++) {
-        //if(!elArr.length) {
-            randArr.push({el: null, value: Math.floor(+from + Math.random() * (+to + 1 - +from))});
-        //} else {
-            //elArr[i].value = Math.floor(+from + Math.random() * (+to + 1 - +from));
-        //}
+        randArr.push({el: null, value: Math.floor(+from + Math.random() * (+to + 1 - +from))});
     }
         
     return randArr;   
@@ -83,8 +93,8 @@ function displayCurrentArray(arr) {
     shown.innerHTML = arr.map(el => el.value).join(" ");
 }
 
-//TODO: Закончить дербанить рандомайзер. Внедрить остальные способы сортировки.
-function makeABubble(arr) {
+//TODO: Внедрить остальные способы сортировки.
+function makeBubble(arr) {
     for (let i = 0; i < arr.length; i++) {
         let bubble = document.querySelector(`#bubble-${i.toString()}`);
         if (!bubble) {
@@ -116,11 +126,77 @@ function bubbleSort(arr) {
                 wasSwap = true;
                 arr = arr.slice();
                 (function(arr) {
-                    setTimeout(() => makeABubble(arr), 1000 / rangeValue * ++counter);
+                    setTimeout(() => makeBubble(arr), rangeValue * ++counter);
                 }(arr));
             }
         }
         if (!wasSwap) break;
+    }
+    return arr;
+}
+
+//сортировка Шелла
+function shellSort(arr) {
+    let n = arr.length, i = Math.floor(n / 2), counter = 0;
+
+    while (i > 0) {
+        for (let j = 0; j < n; j++) {
+            let k = j, temp = arr[j];
+
+            while (k >= i && arr[k-i].value > temp.value) {
+                arr[k] = arr[k-i];
+                k -= i;
+            }
+            arr[k] = temp;
+            arr = arr.slice();
+            (function(arr) {
+                setTimeout(() => makeBubble(arr), rangeValue * ++counter);
+            }(arr));
+        }
+
+        i = (i === 2) ? 1 : Math.floor(i * 5 / 11);
+    }
+
+    return arr;
+}
+
+//пирамидальная сортировка
+function heapify(arr, length, i) {
+    let largest = i;
+    let left = i * 2 + 1;
+    let right = left + 1;
+
+    if(left < length && arr[left].value > arr[largest].value) {
+        largest = left;
+    }
+
+    if(right < length && arr[right].value > arr[largest].value) {
+        largest = right;
+    }
+
+    if(largest !== i) {
+        [arr[i], arr[largest]] = [arr[largest], arr[i]];
+        heapify(arr, length, largest);
+    }
+    setTimeout(() => makeBubble(arr), rangeValue * length * i);
+    return arr;
+}
+
+function heapSort(arr) {
+    let length = arr.length;
+    let i = Math.floor(length / 2 - 1);
+    let k = length - 1;
+
+    while(i >= 0) {
+        heapify(arr, length, i);
+        i--
+    }
+
+    while(k >= 0) {
+        [arr[0], arr[k]] = [arr[k], arr[0]];
+
+        heapify(arr, k, 0);
+        k--
     }
     return arr;
 }
