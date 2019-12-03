@@ -1,6 +1,7 @@
 let elArr = [];
 let optionValue = "shell";
 let rangeValue = 500;
+let heapCounter = 0;
 
 let input = document.querySelector("#textInput");
 let select = document.querySelector("#way");
@@ -42,7 +43,7 @@ select.addEventListener("change", e => {
 
 range.addEventListener("change", e => {
     rangeValue = parseInt(e.target.value, 10);
-    rangeValue = -rangeValue + 2000;
+    rangeValue = 2000 - rangeValue;
 });
 
 randomButton.addEventListener("click", () => {
@@ -52,6 +53,7 @@ randomButton.addEventListener("click", () => {
 });
 
 button.addEventListener("click", () => {
+    heapCounter = 0;
     switch(optionValue) {
         case "bubble":
             elArr = bubbleSort(elArr);
@@ -86,28 +88,28 @@ function displayCurrentArray(arr) {
     if (!shown) {
         let shown = document.createElement("h1");
         shown.id = "theOne";
-        shown.innerHTML = arr.map(el => el.value).join(" ");
+        shown.innerHTML = arr.map(el => el.value).join(" - ");
         display.appendChild(shown);
         return;
     }
-    shown.innerHTML = arr.map(el => el.value).join(" ");
+    shown.innerHTML = arr.map(el => el.value).join(" - ");
 }
 
-//TODO: Внедрить остальные способы сортировки.
+//функция с говорящим названием делает шарики, которые потом анимированно меняют своё местоположение в такт сортировке
 function makeBubble(arr) {
     for (let i = 0; i < arr.length; i++) {
         let bubble = document.querySelector(`#bubble-${i.toString()}`);
         if (!bubble) {
             let bubble = document.createElement("div");
             bubble.className = "bubble";
-            bubble.style.transform = `translateY(${56 * i}px)`;
+            bubble.style.transform = `translateX(${56 * i}px)`;
             bubble.innerHTML = arr[i].value.toString();
             bubble.id = `bubble-${i.toString()}`;
             contentPlace.appendChild(bubble);
             elArr[i] = ({el: bubble, value: arr[i].value});            
         }
         if(arr[i].el) {
-            arr[i].el.style.transform = `translateY(${56 * i}px)`;
+            arr[i].el.style.transform = `translateX(${56 * i}px)`;
             arr[i].el.innerHTML = arr[i].value.toString();
         }
     }
@@ -124,10 +126,9 @@ function bubbleSort(arr) {
                 arr[j] = arr[j + 1];
                 arr[j + 1] = swap;
                 wasSwap = true;
-                arr = arr.slice();
                 (function(arr) {
                     setTimeout(() => makeBubble(arr), rangeValue * ++counter);
-                }(arr));
+                }(arr.slice()));
             }
         }
         if (!wasSwap) break;
@@ -148,19 +149,42 @@ function shellSort(arr) {
                 k -= i;
             }
             arr[k] = temp;
-            arr = arr.slice();
             (function(arr) {
                 setTimeout(() => makeBubble(arr), rangeValue * ++counter);
-            }(arr));
+            }(arr.slice()));
         }
 
-        i = (i === 2) ? 1 : Math.floor(i * 5 / 11);
+        i = Math.floor(i / 2);
     }
 
     return arr;
 }
 
-//пирамидальная сортировка
+//пирамидальная сортировка (сортировка кучей)
+function heapSort(arr) {
+    let length = arr.length;
+    let i = Math.floor(length / 2 - 1);
+    let k = length - 1;
+
+    while(i >= 0) {
+        heapify(arr, length, i);
+        i--;
+    }
+
+    while(k >= 0) {
+        [arr[0], arr[k]] = [arr[k], arr[0]];
+
+        (function(arr) {
+            setTimeout(() => makeBubble(arr), rangeValue * ++heapCounter);
+        }(arr.slice()));
+
+        heapify(arr, k, 0);
+        k--;
+    }
+    return arr;
+}
+
+//"рабочая лошадка" пирамидальной сортировки. Делает почти всю работу
 function heapify(arr, length, i) {
     let largest = i;
     let left = i * 2 + 1;
@@ -178,25 +202,10 @@ function heapify(arr, length, i) {
         [arr[i], arr[largest]] = [arr[largest], arr[i]];
         heapify(arr, length, largest);
     }
-    setTimeout(() => makeBubble(arr), rangeValue * length * i);
-    return arr;
-}
 
-function heapSort(arr) {
-    let length = arr.length;
-    let i = Math.floor(length / 2 - 1);
-    let k = length - 1;
+    (function(arr) {
+        setTimeout(() => makeBubble(arr), rangeValue * ++heapCounter);
+    }(arr.slice()));
 
-    while(i >= 0) {
-        heapify(arr, length, i);
-        i--
-    }
-
-    while(k >= 0) {
-        [arr[0], arr[k]] = [arr[k], arr[0]];
-
-        heapify(arr, k, 0);
-        k--
-    }
     return arr;
 }

@@ -15,7 +15,7 @@ body {
 .cell {
     display: grid;
     justify-content: center;
-    align-content: start;
+    align-content: center;
 }
 
 .input {
@@ -35,10 +35,10 @@ body {
     border: solid 2px #1e90ff;
     border-radius: 24px;
     font-size: 30px;
-    top: 0;
-    left: 50%;
+    top: 40%;
+    left: 34%;
     transform: initial;
-    transition: transform 400ms;
+    transition: transform 350ms;
 }
 
 .content-place {
