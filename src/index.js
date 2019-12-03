@@ -1,8 +1,3 @@
-let elArr = [];
-let optionValue = "shell";
-let rangeValue = 500;
-let heapCounter = 0;
-
 let input = document.querySelector("#textInput");
 let select = document.querySelector("#way");
 let range = document.querySelector("#speed");
@@ -10,6 +5,12 @@ let button = document.querySelector("#applyButton");
 let display = document.querySelector("#display");
 let randomButton = document.querySelector("#randomButton");
 let contentPlace = document.querySelector("#contentPlace");
+
+let elArr = [];
+let optionValue = select.value;
+let rangeValue = 500;
+let heapCounter = 0;
+
 
 input.addEventListener("change", e => {
     contentPlace.innerHTML = "";
@@ -81,7 +82,7 @@ function getRandom(from, to, size) {
     return randArr;   
 }
 
-//для отображения того, что мы вообще ввели в начале, в т.ч. рандомные значения
+//для отображения того, что мы ввели в начале или того, что выдал рандом
 function displayCurrentArray(arr) {
     let shown = document.querySelector("#theOne");
 
